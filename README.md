@@ -29,5 +29,7 @@ terraform apply
 To access the VM after creation:
 
 ```bash
-gcloud compute ssh VM_NAME --tunnel-through-iap  (one can get the VM name from the terraform outputs or via gcloud compute instances list)
+gcloud compute ssh --zone ZONE VM_NAME --project "XXXX" --tunnel-through-iap
 ```
+
+(one can get the VM name from the terraform outputs or via gcloud compute instances list)
