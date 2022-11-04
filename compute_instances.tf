@@ -3,20 +3,12 @@
 locals {
   # Compute Instances definition
   compute_instances = {
-    "central-cluster" = { # Prefix for each Compute Instance
-      name                = "central-cluster"
+    "nephio-poc" = { # Prefix for each Compute Instance
+      name                = "nephio-poc"
       region              = var.region
       zone                = var.zone
       num_instances       = 1
-      instance_template   = module.instance_templates["central-cluster"].self_link
-      deletion_protection = false # Protect the instance from deletion
-    }
-    "edge-cluster" = {
-      name                = "edge-cluster"
-      region              = var.region
-      zone                = var.zone
-      num_instances       = 1
-      instance_template   = module.instance_templates["edge-cluster"].self_link
+      instance_template   = module.instance_templates["cluster"].self_link
       deletion_protection = false # Protect the instance from deletion
     }
   }
