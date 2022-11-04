@@ -3,20 +3,26 @@
 locals {
   # Instance Templates definition
   instance_templates = {
-    "central-cluster" = { # Name Prefix of each Instance Template 
-      name         = "central-cluster"
-      region       = var.region
-      preemptible  = false
-      disk_type    = "pd-balanced"
-      disk_size_gb = "100"
-      auto_delete  = true
-      source_image = "centos-7"
-      machine_type = "n1-standard-1"
-      tags         = ["ssh"]
+    "cluster" = { # Name Prefix of each Instance Template 
+      name                 = "cluster"
+      region               = var.region
+      preemptible          = false
+      disk_type            = "pd-balanced"
+      disk_size_gb         = "100"
+      auto_delete          = true
+      source_image_project = "ubuntu-os-cloud"
+      source_image_family  = "ubuntu-2204-lts"
+      source_image         = "ubuntu-2204-jammy-v20221101a"
+      machine_type         = "e2-standard-8"
+      tags                 = ["ssh"]
       labels = {
         cluster = "central"
       }
       subnetwork = "main-cni-subnet"
+      access_config = [{
+        nat_ip       = null
+        network_tier = null
+      }]
       # additional_networks = [{
       #   network            = "multus-vpc"
       #   subnetwork         = "multus-subnet"
@@ -27,37 +33,7 @@ locals {
       #     network_tier = null
       #   }]
       # }]
-      startup_script = file("scripts/startup_central.sh")
-      service_account = {
-        email  = "compute-general@${var.project_id}.iam.gserviceaccount.com"
-        scopes = []
-      }
-    },
-    "edge-cluster" = { # Name Prefix of each Instance Template 
-      name         = "edge-cluster"
-      region       = var.region
-      preemptible  = false
-      disk_type    = "pd-balanced"
-      disk_size_gb = "100"
-      auto_delete  = true
-      source_image = "centos-7"
-      machine_type = "n1-standard-1"
-      tags         = ["ssh"]
-      labels = {
-        cluster = "edge"
-      }
-      subnetwork = "main-cni-subnet"
-      # additional_networks = [{
-      #   network            = "multus-vpc"
-      #   subnetwork         = "multus-subnet"
-      #   subnetwork_project = var.project_id
-      #   network_ip         = ""
-      #   access_config = [{
-      #     nat_ip       = null
-      #     network_tier = null
-      #   }]
-      # }]
-      startup_script = file("scripts/startup_edge.sh")
+      startup_script = file("scripts/startup.sh")
       service_account = {
         email  = "compute-general@${var.project_id}.iam.gserviceaccount.com"
         scopes = []
@@ -68,20 +44,23 @@ locals {
 
 # Instance Templates Creation
 module "instance_templates" {
-  for_each     = { for instance_templates in local.instance_templates : "${instance_templates.name}" => instance_templates }
-  source       = "terraform-google-modules/vm/google//modules/instance_template"
-  project_id   = var.project_id
-  name_prefix  = each.key
-  region       = each.value.region
-  preemptible  = each.value.preemptible
-  disk_type    = each.value.disk_type
-  disk_size_gb = each.value.disk_size_gb
-  auto_delete  = each.value.auto_delete
-  source_image = each.value.source_image
-  machine_type = each.value.machine_type
-  tags         = each.value.tags
-  labels       = each.value.labels
-  subnetwork   = each.value.subnetwork
+  for_each             = { for instance_templates in local.instance_templates : "${instance_templates.name}" => instance_templates }
+  source               = "terraform-google-modules/vm/google//modules/instance_template"
+  project_id           = var.project_id
+  name_prefix          = each.key
+  region               = each.value.region
+  preemptible          = each.value.preemptible
+  disk_type            = each.value.disk_type
+  disk_size_gb         = each.value.disk_size_gb
+  auto_delete          = each.value.auto_delete
+  source_image_project = each.value.source_image_project
+  source_image_family  = each.value.source_image_family
+  source_image         = each.value.source_image
+  machine_type         = each.value.machine_type
+  tags                 = each.value.tags
+  labels               = each.value.labels
+  subnetwork           = each.value.subnetwork
+  access_config        = each.value.access_config
   # additional_networks = each.value.additional_networks
   subnetwork_project = var.project_id
   startup_script     = each.value.startup_script

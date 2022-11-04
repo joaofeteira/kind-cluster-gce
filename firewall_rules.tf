@@ -5,11 +5,11 @@ locals {
   firewall_rules = {
     "main-cni-vpc" = { # VPC Name here for the subset of rules below
       rules = [{
-        name                    = "allow-ssh-ingress-iap"
-        description             = "Permit SSH into the VM through IAP"
+        name                    = "allow-ssh-ingress"
+        description             = "Permit SSH into the VM"
         direction               = "INGRESS"
         priority                = null
-        ranges                  = ["35.235.240.0/20"]
+        ranges                  = ["0.0.0.0/0"]
         source_tags             = null
         source_service_accounts = null
         target_tags             = ["ssh"]
