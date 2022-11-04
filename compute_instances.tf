@@ -7,7 +7,7 @@ locals {
       name                = "central-cluster"
       region              = var.region
       zone                = var.zone
-      num_instances       = 2
+      num_instances       = 1
       instance_template   = module.instance_templates["central-cluster"].self_link
       deletion_protection = false # Protect the instance from deletion
     }
@@ -15,7 +15,7 @@ locals {
       name                = "edge-cluster"
       region              = var.region
       zone                = var.zone
-      num_instances       = 2
+      num_instances       = 1
       instance_template   = module.instance_templates["edge-cluster"].self_link
       deletion_protection = false # Protect the instance from deletion
     }
@@ -33,5 +33,5 @@ module "compute_instances" {
   num_instances       = each.value.num_instances
   instance_template   = each.value.instance_template
   deletion_protection = each.value.deletion_protection
-  depends_on          = [module.subnets, module.service_accounts]
+  depends_on          = [module.subnets, module.service_accounts, resource.google_compute_project_metadata.ssh_keys]
 }

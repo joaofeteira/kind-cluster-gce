@@ -17,6 +17,10 @@ locals {
         cluster = "central"
       }
       subnetwork = "main-cni-subnet"
+      access_config = [{
+        nat_ip       = null
+        network_tier = null
+      }]
       # additional_networks = [{
       #   network            = "multus-vpc"
       #   subnetwork         = "multus-subnet"
@@ -47,6 +51,10 @@ locals {
         cluster = "edge"
       }
       subnetwork = "main-cni-subnet"
+      access_config = [{
+        nat_ip       = null
+        network_tier = null
+      }]
       # additional_networks = [{
       #   network            = "multus-vpc"
       #   subnetwork         = "multus-subnet"
@@ -68,20 +76,21 @@ locals {
 
 # Instance Templates Creation
 module "instance_templates" {
-  for_each     = { for instance_templates in local.instance_templates : "${instance_templates.name}" => instance_templates }
-  source       = "terraform-google-modules/vm/google//modules/instance_template"
-  project_id   = var.project_id
-  name_prefix  = each.key
-  region       = each.value.region
-  preemptible  = each.value.preemptible
-  disk_type    = each.value.disk_type
-  disk_size_gb = each.value.disk_size_gb
-  auto_delete  = each.value.auto_delete
-  source_image = each.value.source_image
-  machine_type = each.value.machine_type
-  tags         = each.value.tags
-  labels       = each.value.labels
-  subnetwork   = each.value.subnetwork
+  for_each      = { for instance_templates in local.instance_templates : "${instance_templates.name}" => instance_templates }
+  source        = "terraform-google-modules/vm/google//modules/instance_template"
+  project_id    = var.project_id
+  name_prefix   = each.key
+  region        = each.value.region
+  preemptible   = each.value.preemptible
+  disk_type     = each.value.disk_type
+  disk_size_gb  = each.value.disk_size_gb
+  auto_delete   = each.value.auto_delete
+  source_image  = each.value.source_image
+  machine_type  = each.value.machine_type
+  tags          = each.value.tags
+  labels        = each.value.labels
+  subnetwork    = each.value.subnetwork
+  access_config = each.value.access_config
   # additional_networks = each.value.additional_networks
   subnetwork_project = var.project_id
   startup_script     = each.value.startup_script
