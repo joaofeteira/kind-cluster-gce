@@ -11,5 +11,5 @@
     # skip rules (list of rules to skip)
     skip-rules = [
         "AC_GCP_0038",
-        "AC_GCP_0291",
+        "AC_GCP_0291"
     ]
