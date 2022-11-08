@@ -10,6 +10,6 @@
 
     # skip rules (list of rules to skip)
     skip-rules = [
-        "accurics.gcp.IAM.127",
-        "accurics.gcp.IAM.128"
+        "AC_GCP_0038",
+        "AC_GCP_0291"
     ]
